@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  
+<mapper namespace="com.woniu.dorm.mapper.NightfallMapper">
+	<select id="select" parameterType="com.woniu.dorm.pojo.Nightfall" resultMap="mymap">
+		select * from nightfall 
+		<where>
+			<if test="ndate!=null and ndate!=''">
+				and ndate=#{ndate}
+			</if>
+			<if test="ncouse!=null and ncouse!=''">
+				and ncouse like '%${ncouse}%'
+				 
+			</if>
+			<if test="student!=null">
+				and sid in (select sid  from student where sname like '%${student.sname}%')
+			</if>
+		</where>
+	</select>
+	<resultMap type="com.woniu.dorm.pojo.Nightfall" id="mymap">
+		<id column="nid" property="nid"/>
+		<result column="ndate" property="ndate"/>
+		<result column="ncouse" property="ncouse"/>
+		<association property="student" column="sid" select="student"></association>
+		
+	</resultMap>
+	<select id="student" parameterType="int" resultType="com.woniu.dorm.pojo.Student">
+		select * from student where sid =#{sid}
+	</select>
+	
+	
+	 
+</mapper>

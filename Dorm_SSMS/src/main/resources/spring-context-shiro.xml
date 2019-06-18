@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	
+	
+	
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager"></property>
+		
+		<property name="loginUrl" value="/html/login.html"></property>
+		
+		<property name="successUrl" value="/html/main.html"></property>
+		
+		<property name="unauthorizedUrl" value="/html/login.html"></property>
+		
+		<property name="filterChainDefinitions">
+			<value>
+			/html/login.html=anon
+			
+			/user/login=anon
+			/user/register=anon
+			
+			/html/main.html = user
+			
+			<!-- 静态的资源的放行 -->
+			/css/** = anon
+			/fonts/** = anon
+			/js/** = anon
+			
+			
+			/logout=logout 
+			<!-- 指定特定的页面需要特定的角色
+				roles: 指定角色
+				[]:放角色名字，名字由程序员自己取。
+			 -->
+			/superadmin.html=authc,roles[superadmin]
+			/html/admin.html=authc,roles[admin]
+			/user.html=authc,roles[user] 
+			
+			/user/adduser = perms[createuser]
+			
+			/** = authc
+			</value>
+		
+		</property>
+		
+		
+		
+	</bean>
+	
+	
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="myrealm"></property>
+		<property name="sessionManager" ref="sessionManager"></property> 
+		<!-- 9.2.引入缓存管理器 -->
+		<property name="cacheManager" ref="cacheManager"></property>
+	</bean>
+	<!-- 自己写个realm -->
+	<bean id="myrealm" class="com.woniu.dorm.realm.LoginRealm">
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<!--加密算法 -->
+				<property name="hashAlgorithmName" value="MD5"></property>
+				<!--  -->
+				<property name="hashIterations" value="10"></property>
+			</bean>
+			
+		</property>
+		<!-- 9.3.在realm开启缓存：开启之后才会将realm中查询到的数据向缓存里面放 -->
+		<property name="cachingEnabled" value="true"></property>
+		<!-- 配置认证的缓存 -->
+		<property name="authenticationCachingEnabled" value="true"></property>
+		<!-- 指定认证缓存的名字 -->
+		<property name="authenticationCacheName" value="abc"></property>
+		<!-- 配置授权缓存 -->
+		<property name="authorizationCachingEnabled" value="true"></property>
+		<!-- 指定授权缓存的名字 -->
+		<property name="authorizationCacheName" value="cba"></property>
+	
+	</bean>
+	
+	
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"></bean>
+	
+	
+	<!-- 8.1.配置session管理器 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 配置session的监听器 -->
+		<property name="sessionListeners">
+			<list>
+				<!-- 引用自定义的监听器 -->
+				<ref bean="myListener"/>
+			</list>
+		</property>
+		<!-- 配置session的过期时间:毫秒，超过时间操作需要再次认证，默认超时时间30分钟 -->
+		<property name="globalSessionTimeout" value="500000"></property>
+		<!-- 是否删除失效的session -->
+		<property name="deleteInvalidSessions" value="true"></property>
+		<!-- 开启session的回话验证：默认开启 -->
+		<property name="sessionValidationSchedulerEnabled" value="true"></property>
+	</bean>
+	<!-- 配置自定义的监听器 -->
+	<bean id="myListener" class="com.woniu.dorm.listener.CountManListener"></bean>
+	
+		<!-- 9.1.配置缓存管理器 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<!-- 加载缓存配置 -->
+		<property name="cacheManagerConfigFile" value="classpath:ehcache.xml"></property>
+	</bean>
+	
+	
+</beans>

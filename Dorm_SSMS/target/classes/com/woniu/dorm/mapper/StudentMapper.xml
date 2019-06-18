@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  
+<mapper namespace="com.woniu.dorm.mapper.StudentMapper">
+
+	<select id="selectbycid" parameterType="com.woniu.dorm.pojo.Clazz" resultType="com.woniu.dorm.pojo.Student">
+		select * from student where cid = #{cid}
+	</select>
+	<select id="seletebydid" parameterType="com.woniu.dorm.pojo.Dorm" resultType="com.woniu.dorm.pojo.Student">
+		select * from student where did=#{did}
+	</select>
+	
+	
+	<resultMap type="com.woniu.dorm.pojo.Student" id="mymap">
+		<id column="sid" property="sid"/>
+		<result column="sname" property="sname"/>
+		<result column="ssex" property="ssex"/>
+		<result column="telphone" property="telphone"/>
+		<result column="sdate" property="sdate"/>
+		<association property="clazz" column="cid" select="clazzbycid"></association> 
+		<association property="dorm" column="did" select="dormbydid"></association>
+	</resultMap>
+	<select id="all" parameterType="com.woniu.dorm.utils.Page" resultMap="mymap">
+		select * from student limit #{index},#{count}
+	</select>
+	
+	<select id="clazzbycid" parameterType="int" resultType="com.woniu.dorm.pojo.Clazz">
+		select * from clazz where cid=#{cid}
+	</select>
+	<select id="dormbydid" parameterType="int" resultType="com.woniu.dorm.pojo.Dorm">
+		select * from dorm where did = #{did}
+	</select>
+	
+	
+	
+	<select id="total" resultType="int">
+		select count(*) from student
+	</select>
+	<insert id="add" parameterType="com.woniu.dorm.pojo.Student">
+		insert into student(sname,ssex,did,telphone,cid,sdate,simg) values(#{sname},#{ssex},#{did},#{telphone},#{cid},#{sdate},#{simg})
+	</insert>
+	<delete id="delete" parameterType="com.woniu.dorm.pojo.Student">
+		delete from student where sid =#{sid}
+	</delete>
+	<select id="selectbysid" parameterType="com.woniu.dorm.pojo.Student" resultType="com.woniu.dorm.pojo.Student">
+		select * from student where sid=#{sid}
+	</select>
+	<select id="show" parameterType="com.woniu.dorm.pojo.Student" resultMap="mymap">
+		select * from student where sid=#{sid}
+	</select>
+	<update id="change" parameterType="com.woniu.dorm.pojo.Student">
+		update student set did =#{did} where sid=#{sid}
+	</update>
+	
+	<select id="select" parameterType="com.woniu.dorm.pojo.Student" resultMap="mymap">
+		select * from student
+		<where>
+			<if test="sname!=null">
+				and sname like '%${sname}%'
+			</if>
+			<if test="clazz!=null">
+				and cid in(select cid from clazz where cname like '%${clazz.cname}%' )
+			</if>
+			<if test=" dorm!=null">
+				and did in(select did from dorm where daddress like '%${dorm.daddress}%' )
+			</if>
+		</where>
+	</select>
+	
+	<select id="nightfallbystudent" parameterType="com.woniu.dorm.pojo.Student" resultType="com.woniu.dorm.pojo.Student">
+		select * from student where sname = #{sname}
+	</select>
+
+	
+	
+	 
+</mapper>

@@ -1,0 +1,14 @@
+<ehcache>
+     <diskStore path="java.io.tmpdir" />
+     <defaultCache maxElementsInMemory="10000" eternal="false"
+         timeToIdleSeconds="120" timeToLiveSeconds="120" overflowToDisk="true" />
+     
+     <!-- 9.4.配置缓存区 -->
+     <!-- 指定认证使用的缓存区域 -->
+     <cache name="abc" maxElementsInMemory="10000" eternal="false"
+         timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
+         
+     <!-- 指定授权的缓存区域 -->
+     <cache name="cba" maxElementsInMemory="10000" eternal="false"
+         timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" />
+</ehcache>

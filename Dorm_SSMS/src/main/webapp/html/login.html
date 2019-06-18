@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>登陆</title>
+		<link href="../css/bootstrap.min.css" rel="stylesheet">
+		<script src="../js/jquery.min.js"></script>
+ 		<script src="../js/bootstrap.min.js"></script>
+ 		<style>
+.col-center-block {
+    float: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+	</head>
+	<body>
+	<div class="container">
+  <div class="row myCenter">
+    <div class="col-xs-6 col-md-4 col-center-block">
+      <form class="form-signin" action="../user/login" >
+        <h2 class="form-signin-heading">宿舍管理系统欢迎登录</h2>
+        <label for="username" class="sr-only">用户名</label>
+        <input type="text" id="username" name="account" class="form-control" placeholder="用户名" required autofocus>
+        <label for="inputPassword" class="sr-only">密码</label>
+        <input type="password" id="inputPassword" name="pwd" class="form-control" placeholder="密码" required>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me" name="remeberme">
+            记住我 </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+
+
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+
+	<!-- 适配器 -->
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<!-- 配置数据验证器 -->
+		 <property name="webBindingInitializer" ref="binder"></property>
+		<!-- json-2:引入jackson -->
+		<property name="messageConverters">
+			<list>
+				<ref bean="jackson" />
+			</list>
+		</property>
+	</bean>
+	<bean id="jackson"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<!-- 设置支持的媒体类型 -->
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=utf-8</value>
+				<value>text/html;charset=utf-8</value>
+				<value>text/json;charset=utf-8</value>
+			</list>
+		</property>
+		<!-- 配置时间格式 -->
+		<property name="objectMapper">
+			<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+				<property name="dateFormat">
+					<bean class="java.text.SimpleDateFormat">
+						<constructor-arg type="java.lang.String"
+							value="yyyy-MM-dd "></constructor-arg>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	
+	<!-- 第四种：直接通过注解标签完成 = 第三种处理器映射器+适配器-->
+	<!-- <mvc:annotation-driven></mvc:annotation-driven> -->
+	
+	
+	<!-- 静态资源放行：html、图片、视频、音频 -->
+	<mvc:default-servlet-handler/>
+	
+	<!-- 3.配置视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"></bean>
+	
+	
+	<context:component-scan base-package="com.woniu.dorm.handler"></context:component-scan>
+	
+
+
+	
+	
+	
+	
+	
+	
+	<!-- 创建用于文件上传的解析器 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		
+		<property name="maxUploadSize" value="102400000"></property>
+		
+		
+		<property name="maxInMemorySize" value="4096"></property>
+		
+	
+		<property name="defaultEncoding" value="UTF-8"></property>
+	
+		<property name="resolveLazily" value="true"></property>
+	</bean> 
+	
+	
+	<!-- 数据效验 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator"></property>
+    </bean>
+
+    <bean id="binder" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+        <!-- 配置校验器 -->
+        <property name="validator" ref="validator"></property>
+    </bean>
+	
+
+	
+	
+</beans>

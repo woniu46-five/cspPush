@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <!-- 指定采用的日志类型：log4j sef4j -->
+
+  <!-- 取别名 -->
+ 
+  
+  <!-- environments配置连接数据库环境  default：采用哪个环境作为默认环境 -->
+  
+  <mappers>
+  	<package name="com.woniu.dorm.mapper"/>
+  </mappers>
+  
+</configuration>

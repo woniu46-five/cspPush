@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver"></property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/dormmanage">
+		</property>
+		<property name="username" value="root"></property>
+		<property name="password" value="root"></property>
+	</bean>
+
+	<bean id="factory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 数据库连接信息来源于 dataSource -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- 扫描器相当于 mybatis.xml 中 mappers 下 package 标签,扫描 com.woniuxy.mapper 包后会给 
+		对应接口创建对象 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 要扫描哪个包 -->
+		<property name="basePackage" value="com.woniu.dorm.mapper"></property>
+		<!-- 和 factory 产生关系 -->
+		<property name="sqlSessionFactory" ref="factory"></property>
+	</bean>
+	
+		<!-- 开启注解扫描 -->
+	<context:component-scan base-package="com.woniu.dorm.*"></context:component-scan>
+	
+	<!-- 开启事务 -->
+	<!-- 配置切点 -->
+	
+		<aop:config>
+		<!-- 配置切点 -->
+		<aop:pointcut expression="execution(* com.woniu.dorm.service.*.*(..))" id="pc"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pc"/>
+	</aop:config>
+	
+	
+	<!-- 2.配置通知 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- <tx:method name="insertLog" propagation="REQUIRES_NEW" isolation="DEFAULT"/> -->
+			<tx:method name="*"/> 
+		</tx:attributes>
+	</tx:advice>
+	<!-- 3.配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<!-- 开启注解事务处理 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	
+	
+
+
+</beans>

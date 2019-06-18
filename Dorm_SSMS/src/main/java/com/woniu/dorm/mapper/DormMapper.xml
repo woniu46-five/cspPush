@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  
+<mapper namespace="com.woniu.dorm.mapper.DormMapper">
+
+
+	<resultMap type="com.woniu.dorm.pojo.Dorm" id="mydorm">
+		<id column="did" property="did"/>
+		<result column="daddress" property="daddress"/>
+		<result column="dcount" property="dcount" />
+		<association property="type" column="typeid" select="mytype" > </association>
+		<association property="unit" column="uid" select="myunit"></association>
+		<association property="houseowner" column="hid" select="myhouseowner"></association>
+		<collection property="breakdowns" column="did" select="mybreakdowns"></collection> 
+		<collection property="students" column="did" select="mystudents"></collection>
+	</resultMap>
+
+
+	<select id="all" resultMap="mydorm" parameterType="com.woniu.dorm.utils.Page">
+		select * from dorm limit #{index},#{count}
+	</select>
+	
+	
+
+	<select id="show" resultMap="mydorm" parameterType="com.woniu.dorm.pojo.Dorm">
+		select * from dorm where did = #{did}
+	</select>
+	
+	
+	<select id="mytype" parameterType="int" resultType="com.woniu.dorm.pojo.Dormtype">
+		select * from dormtype where typeid = #{typeid}
+	</select>
+	<select id="myunit" parameterType="int" resultType="com.woniu.dorm.pojo.Unit">
+		select * from unit where uid=#{uid}
+	</select>
+	<select id="myhouseowner" parameterType="int" resultType="com.woniu.dorm.pojo.Houseowner">
+		select * from houseowner where hid = #{hid}
+	</select>
+	<select id="mybreakdowns" parameterType="int" resultType="com.woniu.dorm.pojo.Breakdown">
+		select * from breakdown where did =#{did}
+	</select>
+	
+	<resultMap type="com.woniu.dorm.pojo.Student" id="mystudent">
+		<id column="sid" property="sid"/>
+		<result column="sname" property="sname"/>
+		<result column="ssex" property="ssex"/>
+		<result column="did" property="did"/>
+		<result column="telphone" property="telphone"/>
+		<result column="sdate" property="sdate"/>
+		<association property="clazz" column="cid" select="myclazz"></association>
+		
+	</resultMap>
+	<select id="mystudents" parameterType="int" resultMap="mystudent">
+		select * from student where did = #{did}
+	</select>
+	
+	<select id="myclazz" parameterType="int" resultType="com.woniu.dorm.pojo.Clazz">
+		select * from clazz where cid=#{cid}
+	</select>
+	
+	
+	
+	<select id="allpage" resultType="int">
+		select count(*) from dorm
+	</select>
+	
+	<insert id="insertdorm" parameterType="com.woniu.dorm.pojo.Dorm">
+		insert into dorm(daddress,typeid,uid,dcount,hid,person,breakdown) values(#{daddress},#{type.typeid},#{unit.uid},#{dcount},#{houseowner.hid},#{person},#{breakdown})
+	</insert>
+	
+	<delete id="deletedorm" parameterType="com.woniu.dorm.pojo.Dorm">
+		delete from dorm where did = #{did}
+	</delete>
+	
+	
+	
+	<select id="myselect" parameterType="com.woniu.dorm.pojo.Dorm" resultMap="mydorm">
+		select * from dorm<where>
+			<if test="daddress!=null">
+				daddress like  '%${daddress}%'
+			</if>
+			<if test="type!=null">
+				and typeid=#{type.typeid}
+			</if>
+			<if test="person!=null">
+			 	and person=#{person}
+			</if>
+			<if test="breakdown!=null">
+				and breakdown=#{breakdown}
+			</if>
+		
+		
+		</where>
+	</select>
+
+	
+	
+	
+	 
+</mapper>
